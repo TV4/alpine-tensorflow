@@ -35,7 +35,8 @@ RUN apk add --no-cache --virtual=.build-deps \
         swig \
         zip \
     && cd /tmp \
-    && pip install -U pip setuptools wheel
+    && pip install -U pip setuptools wheel \
+    && pip install enum
 #    && $(cd /usr/bin && ln -s python3 python)
 
 # Bazel download
