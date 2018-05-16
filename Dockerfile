@@ -11,7 +11,7 @@ ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 0.10.0
 ENV TENSORFLOW_VERSION 1.8.0
 
-RUN apk add --update --no-cache python python2-tkinter py-numpy py2-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
+RUN apk add --update --no-cache ca-certificates wget python python2-tkinter py-numpy py2-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
         cmake \
@@ -38,6 +38,19 @@ RUN apk add --no-cache --virtual=.build-deps \
     && pip install -U pip setuptools wheel \
     && pip install enum
 #    && $(cd /usr/bin && ln -s python3 python)
+
+# Experimental...? Taken from https://github.com/sgerrand/alpine-pkg-glibc
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub
+RUN cd /tmp \
+    && curl -SLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.27-r0/glibc-2.27-r0.apk \
+    && apk add glibc-2.27-r0.apk
+RUN cd /tmp \
+    && curl -SLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.27-r0/glibc-bin-2.27-r0.apk \
+    && apk add glibc-bin-2.27-r0.apk
+RUN cd /tmp \
+    && curl -SLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.27-r0/glibc-i18n-2.27-r0.apk \
+    && apk add glibc-i18n-2.27-r0.apk
+RUN /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
 
 # Bazel download
 RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
